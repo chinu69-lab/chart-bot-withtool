@@ -1,3 +1,4 @@
+%%writefile app.py
 
 import streamlit as st
 
@@ -5,7 +6,6 @@ from typing import Annotated, Literal
 from typing_extensions import TypedDict
 
 from langchain_groq import ChatGroq
-from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_core.tools import tool
 from langchain_core.messages import (
     SystemMessage,
@@ -129,21 +129,48 @@ for message in st.session_state.messages:
 # 6. TOOLS
 # =========================================================
 
-search = DuckDuckGoSearchRun()
+
+
+from ddgs import DDGS
 
 
 @tool
 def web_search(query: str) -> str:
     """
-    Search the web for current or latest information.
-    Use this tool when the user asks about current information,
-    news, recent events, prices, or other information that
-    may have changed.
+    Search the web for current and latest information.
+    Use this when the user asks about recent information,
+    news, prices, events, or information that may have changed.
     """
 
     print("⭐ Web Search function called")
 
-    return search.run(query)
+    try:
+        results = DDGS().text(
+            query,
+            max_results=5
+        )
+
+        if not results:
+            return "No search results found."
+
+        output = []
+
+        for result in results:
+            title = result.get("title", "")
+            body = result.get("body", "")
+            url = result.get("href", "")
+
+            output.append(
+                f"Title: {title}\n"
+                f"Description: {body}\n"
+                f"URL: {url}"
+            )
+
+        return "\n\n".join(output)
+
+    except Exception as e:
+
+        return f"Web search failed: {str(e)}"
 
 
 @tool
