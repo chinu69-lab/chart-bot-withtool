@@ -1,7 +1,6 @@
-
 streamlit
 langchain-groq
 langchain-community
 langchain-core
 langgraph
-duckduckgo-search
+ddgs
