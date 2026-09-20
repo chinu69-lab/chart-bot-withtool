@@ -1,5 +1,3 @@
-%%writefile app.py
-
 import streamlit as st
 
 from typing import Annotated, Literal
